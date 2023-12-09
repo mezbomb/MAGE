@@ -1,7 +1,7 @@
 #include "engine_header.h"
 
 int main() {
-    EngineClass engine;
+    sage::EngineClass engine;
     engine.engineFunction();
 
     return 0;

@@ -1,0 +1,3 @@
+[submodule "thirdparty/gfx"]
+	path = thirdparty/gfx
+	url = https://github.com/gboisse/gfx
