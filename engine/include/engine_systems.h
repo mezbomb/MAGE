@@ -1,6 +1,6 @@
 #pragma once
 
-namespace sage {
+namespace SAGE {
 
     class System {
     };
