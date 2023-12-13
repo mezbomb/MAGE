@@ -4,6 +4,7 @@ add_library(engine STATIC
     src/engine_systems.cpp
     include/engine_header.h
     include/engine_systems.h
+    include/events.h
      ${CMAKE_SOURCE_DIR}/thirdparty/gfx/gfx.h
 )
 

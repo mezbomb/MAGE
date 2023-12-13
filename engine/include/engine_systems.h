@@ -6,7 +6,9 @@ namespace SAGE {
     };
 
     class InputSystem : public System {
+    public:
         // Input
+        void HandleKeyInput();
     };
 
     class PhysicsSystem : public System {
