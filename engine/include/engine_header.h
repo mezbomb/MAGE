@@ -8,13 +8,9 @@
 #include <queue>
 #include "events.h"
 #include <chrono>
+#include "GameObject.h"
 
 namespace SAGE {
-
-    class GameObject {
-    public:
-        unsigned int tag;
-    };
 
     class Layer {
     public:
@@ -24,6 +20,7 @@ namespace SAGE {
             RESOURCEMANAGER,
             RENDER,
             DEBUG,
+            LAYERCOUNT, // always last
         };
         virtual void OnUpdate() = 0;
         virtual std::queue<Event*>& GetEventQueue() = 0;
@@ -36,6 +33,7 @@ namespace SAGE {
 
     class GameLayer : public Layer {
     public:
+        GameLayer() { m_Type = LayerType::GAME; }
         void OnUpdate() override { HandleEvents(); };
         virtual std::queue<Event*>& GetEventQueue() override { return m_EventQueue; }
     private:
@@ -49,61 +47,41 @@ namespace SAGE {
 
     class SceneLayer : public Layer {
     public:
+        SceneLayer();
         void OnUpdate() override {};
+        virtual void LoadLevel(std::string&);
         virtual std::queue<Event*>& GetEventQueue() override { return m_EventQueue; }
+        static std::vector<GameObject*>& GetWorld() { return m_World; }
+    private:
+        std::queue<Event*> m_EventQueue;
         // SceneGraph
-    private:
-        std::queue<Event*> m_EventQueue;
-        std::vector<GameObject> m_World;
-    };
+        static std::vector<GameObject*> m_World;
+        ComponentFactory m_ComponentFactory;
 
-    class ResourceManagerLayer : public Layer {
-    public:
-        void OnUpdate() override {};
-        virtual std::queue<Event*>& GetEventQueue() override { return m_EventQueue; }
-        // Memory Manager
-        // Scheduling Layer
-        // -Task Scheduler
-        // -JobSystem
-    private:
-        std::queue<Event*> m_EventQueue;
     };
 
     class RenderLayer : public Layer {
     public:
         RenderLayer(GfxContext& context) : m_Context(context), m_Time(std::chrono::high_resolution_clock::now()), m_DeltaTime(0.0f) {
-            vertices[0] = 0.5f;
-            vertices[1] = -0.5f;
-            vertices[2] = 0.0f;
-            vertices[3] = 0.0f;
-            vertices[4] = 0.7f;
-            vertices[5] = 0.0f;
-            vertices[6] = -0.5f;
-            vertices[7] = -0.5f;
-            vertices[8] = 0.0f;
-
-            vertex_buffer = gfxCreateBuffer(m_Context, sizeof(vertices), vertices);
-            program = gfxCreateProgram(m_Context, "triangle");
-            kernel = gfxCreateGraphicsKernel(m_Context, program);
+            m_Type = LayerType::RENDER;
         }
         void OnUpdate() override;
         virtual std::queue<Event*>& GetEventQueue() override { return m_EventQueue; }
         // Renderer
-
-        //TODO(mez) hacking this for now trying to get a triangle up
-        float vertices[9];
-        GfxBuffer vertex_buffer;
-        GfxProgram program;
-        GfxKernel kernel;
     private:
-        std::queue<Event*> m_EventQueue;
         GfxContext& m_Context;
+        std::queue<Event*> m_EventQueue;
         std::chrono::time_point<std::chrono::high_resolution_clock> m_Time;
         std::chrono::duration<float> m_DeltaTime;
+        std::unordered_map<unsigned int, GfxBuffer> m_Buffers;
+        std::unordered_map<unsigned int, GfxProgram> m_Programs;
+        std::unordered_map<unsigned int, GfxKernel> m_Kernels;
+        std::unordered_map<unsigned int, GfxTexture> m_Textures;
     };
 
     class DebugLayer : public Layer {
     public:
+        DebugLayer() { m_Type = LayerType::DEBUG; }
         void OnUpdate() override {};
         virtual std::queue<Event*>& GetEventQueue() override { return m_EventQueue; }
         // Profiler
@@ -113,9 +91,9 @@ namespace SAGE {
     };
 
     struct SAGE_GAME_SETTINGS {
-        std::string GameName = "SAGE Game";
-        unsigned int WindowWidth = 1280;
-        unsigned int WindowHeight = 720;
+        std::string GameName;
+        unsigned int WindowWidth;
+        unsigned int WindowHeight;
 
         SAGE_GAME_SETTINGS(const std::string& name = "SAGE Game", unsigned int w = 1280, unsigned int h = 720)
             : GameName(name), WindowWidth(w), WindowHeight(h) {};
@@ -123,15 +101,8 @@ namespace SAGE {
 
     class GameEngine {
     public:
-        GameEngine(const SAGE_GAME_SETTINGS& settings = SAGE_GAME_SETTINGS()) {
-            GfxCreateWindowFlags flags = kGfxCreateWindowFlag_NoResizeWindow;
-            m_Window = gfxCreateWindow(1280, 720, settings.GameName.c_str(), flags);
-            m_Context = gfxCreateContext(m_Window);
-        }
-        void UpdateLayers() { for (auto layer : m_Layers) { layer->OnUpdate(); } }
-        void PushLayer(Layer* layer, Layer::LayerType type) { layer->m_Type = type;  m_Layers.push_back(layer); }
-        Layer* GetLayer(Layer::LayerType type) { for (auto layer : m_Layers) { if (layer->m_Type == type) return layer; } }
-        GfxContext& GetContext() { return m_Context; }
+        GameEngine(const SAGE_GAME_SETTINGS& settings = SAGE_GAME_SETTINGS());
+        void Run();
 
         bool GameQuit() {
             gfxWindowPumpEvents(m_Window);
@@ -139,8 +110,23 @@ namespace SAGE {
         }
 
     private:
-        std::vector<Layer*> m_Layers;
-        GfxWindow  m_Window;
-        GfxContext m_Context;
+        friend class GameLayer;
+        friend class SceneLayer;
+        friend class RenderLayer;
+        friend class DebugLayer;
+
+        GfxWindow    m_Window;
+        GfxContext   m_Context;
+
+        // Layers
+        GameLayer*   m_pGameLayer;
+        SceneLayer*  m_pSceneLayer;
+        RenderLayer* m_pRenderLayer;
+        DebugLayer*  m_pDebugLayer;
+
+        // ResourceManager
+        // ResourceManager m_ResourceManager;
+
+        // ComponentManager
     };
 }

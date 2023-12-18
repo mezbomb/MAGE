@@ -18,6 +18,9 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E copy
             ${GFX_PIX_PATH}/bin/x64/WinPixEventRuntime.dll
             ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/WinPixEventRuntime.dll
+    COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_SOURCE_DIR}/editor/src/scene1.json
+            ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/scene1.json
 )
 
 # Link the application with the engine library
