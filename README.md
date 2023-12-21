@@ -1,2 +1,2 @@
-# sage
-Simple Amateur Game Engine
+# MAGE
+Mezbomb's Amateur Game Engine
