@@ -18,7 +18,7 @@ namespace MAGE {
         m_EventAddQueue.clear();
     }
 
-    std::shared_ptr<Event> EventManager::CreateSageEvent(Event::EventType type)
+    std::shared_ptr<Event> EventManager::CreateMageEvent(Event::EventType type)
     {
         auto Event = std::shared_ptr<MAGE::Event>(new MAGE::Event(type));
         QueueEvent(std::make_tuple(Event, type));

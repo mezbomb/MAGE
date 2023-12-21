@@ -80,18 +80,18 @@ namespace MAGE {
     private:
     };
 
-    struct SAGE_GAME_SETTINGS {
+    struct MAGE_GAME_SETTINGS {
         std::string GameName;
         unsigned int WindowWidth;
         unsigned int WindowHeight;
 
-        SAGE_GAME_SETTINGS(const std::string& name = "MAGE Game", unsigned int w = 1280, unsigned int h = 720)
+        MAGE_GAME_SETTINGS(const std::string& name = "MAGE Game", unsigned int w = 1280, unsigned int h = 720)
             : GameName(name), WindowWidth(w), WindowHeight(h) {};
     };
 
     class GameEngine {
     public:
-        GameEngine(const SAGE_GAME_SETTINGS& settings = SAGE_GAME_SETTINGS());
+        GameEngine(const MAGE_GAME_SETTINGS& settings = MAGE_GAME_SETTINGS());
         void Run();
 
         bool GameQuit() {

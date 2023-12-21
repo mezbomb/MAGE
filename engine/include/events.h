@@ -34,7 +34,7 @@ namespace MAGE {
 
         void OnUpdate();
 
-        std::shared_ptr<Event> CreateSageEvent(Event::EventType);
+        std::shared_ptr<Event> CreateMageEvent(Event::EventType);
         EventContainer& GetAllEvents() { return m_Events; }
         EventContainer& GetEventsByType(Event::EventType);
         void DestroyAllEvents();

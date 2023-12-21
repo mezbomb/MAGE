@@ -2,7 +2,7 @@
 #include "Events.h"
 
 int main() {
-    MAGE::SAGE_GAME_SETTINGS settings = {};
+    MAGE::MAGE_GAME_SETTINGS settings = {};
     settings.GameName = "MAGE Editor";
     settings.WindowWidth = 1920;
     settings.WindowHeight = 1080;

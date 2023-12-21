@@ -23,7 +23,7 @@ void MAGE::GameEngine::Run()
     m_pDebugLayer->OnUpdate();
 }
 
-MAGE::GameEngine::GameEngine(const MAGE::SAGE_GAME_SETTINGS& settings)
+MAGE::GameEngine::GameEngine(const MAGE::MAGE_GAME_SETTINGS& settings)
 {
     GfxCreateWindowFlags flags = kGfxCreateWindowFlag_NoResizeWindow;
     m_Window = gfxCreateWindow(settings.WindowWidth, settings.WindowHeight, settings.GameName.c_str(), flags);
