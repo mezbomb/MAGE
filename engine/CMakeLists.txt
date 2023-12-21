@@ -1,8 +1,9 @@
 # Engine library
 add_library(engine STATIC
     src/Engine.cpp
+    src/Entity.cpp
+    src/Events.cpp
     src/Systems.cpp
-    src/EntityManager.cpp
     src/Component.cpp
     src/Scene.cpp
     include/Engine.h
@@ -10,7 +11,7 @@ add_library(engine STATIC
     include/Events.h
     include/Entity.h
     include/Component.h
-    include/EntityManager.h
+    include/Scene.h
     ${CMAKE_SOURCE_DIR}/thirdparty/gfx/gfx.h
     ${CMAKE_SOURCE_DIR}/thirdparty/nlohmann/json.hpp
 )

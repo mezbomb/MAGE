@@ -1,7 +1,5 @@
-// SceneLayer.cpp
-
-#include "Engine.h"
+#include "Scene.h"
 
 namespace SAGE {
-    std::vector<Entity*> SceneLayer::m_World;
+    
 }

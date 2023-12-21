@@ -9,7 +9,8 @@
 #include "Events.h"
 #include <chrono>
 #include "Entity.h"
-#include "EntityManager.h"
+#include "Scene.h"
+
 namespace SAGE {
 
     class Layer {
@@ -23,41 +24,34 @@ namespace SAGE {
             LAYERCOUNT, // always last
         };
         virtual void OnUpdate() = 0;
-        virtual std::queue<Event*>& GetEventQueue() = 0;
 
         LayerType m_Type;
 
     private:
-        //virtual void HandleEvents() = 0;
     };
 
     class GameLayer : public Layer {
     public:
         GameLayer() { m_Type = LayerType::GAME; }
-        void OnUpdate() override { HandleEvents(); };
-        virtual std::queue<Event*>& GetEventQueue() override { return m_EventQueue; }
+        void OnUpdate() override {};
     private:
-        void HandleEvents();
-        std::queue<Event*> m_EventQueue;
         InputSystem   m_Input;
         PhysicsSystem m_Physics;
         AudioSystem   m_Audio;
-        NetworkSystem m_Net;
+        // NetworkSystem m_Net; // Single Player :0
     };
 
     class SceneLayer : public Layer {
     public:
         SceneLayer();
-        void OnUpdate() override {};
-        virtual void LoadLevel(std::string&);
-        virtual std::queue<Event*>& GetEventQueue() override { return m_EventQueue; }
-        static std::vector<Entity*>& GetWorld() { return m_World; }
+        void OnUpdate() override;
+        virtual void LoadLevel(Scene*);
+        virtual void UnloadLevel(Scene*);
+        virtual void LoadScenes(std::string&);
+        void SwitchScene(std::string& s) { m_CurrentScene = m_Scenes[s]; }
     private:
-        std::queue<Event*> m_EventQueue;
-        // SceneGraph
-        static std::vector<Entity*> m_World;
-        ComponentFactory m_ComponentFactory;
-
+        Scene* m_CurrentScene;
+        std::unordered_map<std::string, Scene*> m_Scenes;
     };
 
     class RenderLayer : public Layer {
@@ -66,11 +60,9 @@ namespace SAGE {
             m_Type = LayerType::RENDER;
         }
         void OnUpdate() override;
-        virtual std::queue<Event*>& GetEventQueue() override { return m_EventQueue; }
         // Renderer
     private:
         GfxContext& m_Context;
-        std::queue<Event*> m_EventQueue;
         std::chrono::time_point<std::chrono::high_resolution_clock> m_Time;
         std::chrono::duration<float> m_DeltaTime;
         std::unordered_map<unsigned int, GfxBuffer> m_Buffers;
@@ -83,11 +75,9 @@ namespace SAGE {
     public:
         DebugLayer() { m_Type = LayerType::DEBUG; }
         void OnUpdate() override {};
-        virtual std::queue<Event*>& GetEventQueue() override { return m_EventQueue; }
         // Profiler
         // Output
     private:
-        std::queue<Event*> m_EventQueue;
     };
 
     struct SAGE_GAME_SETTINGS {
@@ -124,9 +114,10 @@ namespace SAGE {
         RenderLayer* m_pRenderLayer;
         DebugLayer*  m_pDebugLayer;
 
-        // EntityManager
-        static EntityManager m_EntityManager;
-
-        // ComponentManager
+        // Managers
+        static EntityManager    m_EntityManager;
+        static ComponentFactory m_ComponentManager; //TODO(mez) make factory part of manager use manager type
+        static EventManager     m_EventManager;
+        // static AssetManager  m_AssetManager;
     };
 }

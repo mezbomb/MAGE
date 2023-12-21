@@ -1,22 +1,29 @@
 {
-    "gameobjects": [
+  "scenes": [
     {
-            "id": 1,
-            "isAlive": true,
-            "name": "triangle",
-            "components": [
-                {
-                "type": "ComponentTransform",
-                "position": [0.0, 0.0, 0.0],
-                "scale": [1.0, 1.0, 1.0],
-                "rotation": [0.0, 0.0, 0.0]
-                },
-                {
-                "type": "ComponentMesh",
-                "vertices": [ 0.5, -0.5, 0.0, 0.0, 0.7, 0.0, -0.5, -0.5, 0.0 ],
-                "program": "triangle"
-                }
-            ]
+      "name": "scene1",
+      "extension": ".json",
+      "path": "",
+      "entities": [
+        {
+          "id": 1,
+          "isAlive": true,
+          "name": "triangle",
+          "components": [
+            {
+              "type": "ComponentTransform",
+              "position": [ 0.0, 0.0, 0.0 ],
+              "scale": [ 1.0, 1.0, 1.0 ],
+              "rotation": [ 0.0, 0.0, 0.0 ]
+            },
+            {
+              "type": "ComponentMesh",
+              "vertices": [ 0.5, -0.5, 0.0, 0.0, 0.7, 0.0, -0.5, -0.5, 0.0 ],
+              "program": "triangle"
+            }
+          ]
         }
-    ]
+      ]
+    }
+  ]
 }

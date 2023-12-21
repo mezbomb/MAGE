@@ -21,6 +21,12 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E copy
             ${CMAKE_SOURCE_DIR}/editor/src/scene1.json
             ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/scene1.json
+    COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_SOURCE_DIR}/editor/src/triangle.vert
+            ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/triangle.vert
+    COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_SOURCE_DIR}/editor/src/triangle.frag
+            ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/triangle.frag
 )
 
 # Link the application with the engine library

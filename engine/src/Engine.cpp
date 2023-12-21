@@ -3,15 +3,19 @@
 #include <iostream>
 #include "json.hpp"
 #include <fstream>
-#include "EntityManager.h"
+#include "Events.h"
 #include "Component.h"
 
 namespace SAGE {
     EntityManager GameEngine::m_EntityManager;
+    EventManager GameEngine::m_EventManager;
+    ComponentFactory GameEngine::m_ComponentManager;
+    //AssetManager GameEngine::m_AssetManager;
 }
 
 void SAGE::GameEngine::Run()
 {
+    m_EventManager.OnUpdate();
     m_EntityManager.OnUpdate();
     m_pGameLayer->OnUpdate();
     m_pSceneLayer->OnUpdate();
@@ -23,7 +27,8 @@ SAGE::GameEngine::GameEngine(const SAGE::SAGE_GAME_SETTINGS& settings)
 {
     GfxCreateWindowFlags flags = kGfxCreateWindowFlag_NoResizeWindow;
     m_Window = gfxCreateWindow(settings.WindowWidth, settings.WindowHeight, settings.GameName.c_str(), flags);
-    m_Context = gfxCreateContext(m_Window);
+    //TODO(mez) make this a preprocessor macro
+    m_Context = gfxCreateContext(m_Window, kGfxCreateContextFlag_EnableDebugLayer);
 
     m_pGameLayer   = new SAGE::GameLayer();
     m_pSceneLayer  = new SAGE::SceneLayer();
@@ -31,23 +36,7 @@ SAGE::GameEngine::GameEngine(const SAGE::SAGE_GAME_SETTINGS& settings)
     m_pDebugLayer  = new SAGE::DebugLayer();
 
     std::string level = "scene1.json";
-    m_pSceneLayer->LoadLevel(level);
-}
-
-void SAGE::GameLayer::HandleEvents()
-{
-    std::queue<Event*> q = GetEventQueue();
-    while (!q.empty()) {
-        Event* e = q.front();
-        q.pop();
-
-        switch (e->GetType()) {
-        case Event::EventType::KEY: m_Input.HandleKeyInput(); break;
-        default: break;
-        }
-        //TODO(mez) move to free list and manage event handles to avoid dynamic alloc/dealloc
-        delete e;
-    }
+    m_pSceneLayer->LoadScenes(level);
 }
 
 void SAGE::RenderLayer::OnUpdate() {
@@ -76,7 +65,7 @@ void SAGE::RenderLayer::OnUpdate() {
                 kernel = gfxCreateGraphicsKernel(m_Context, program);
                 m_Kernels[1] = kernel;
             }
-
+            
             gfxProgramSetParameter(m_Context, m_Programs[1], "Color", color);
             gfxCommandBindKernel(m_Context, m_Kernels[1]);
             gfxCommandBindVertexBuffer(m_Context, m_Buffers[1]);
@@ -89,30 +78,90 @@ void SAGE::RenderLayer::OnUpdate() {
 SAGE::SceneLayer::SceneLayer()
 {
     m_Type = LayerType::SCENE;
+    m_CurrentScene = new Scene();
+    m_Scenes[m_CurrentScene->m_Name] = m_CurrentScene;
+
     ComponentFactory::RegisterComponentType("ComponentTransform", []() -> std::shared_ptr<Component> { return std::make_shared<ComponentTransform>(); });
     ComponentFactory::RegisterComponentType("ComponentMesh", []() -> std::shared_ptr<Component> { return std::make_shared<ComponentMesh>(); });
 }
 
-void SAGE::SceneLayer::LoadLevel(std::string& path) {
+void SAGE::SceneLayer::LoadLevel(Scene* scene) {
+    if (false == scene->m_Loaded)
+    {
+        using json = nlohmann::json;
+        std::string fullpath = scene->m_Path + scene->m_Name + scene->m_Extension;
+        std::ifstream file(fullpath.c_str());
+        json data = json::parse(file);
+
+        for (auto s : data["scenes"]) {
+            if (s["name"] == scene->m_Name) {
+                for (auto& e : s["entities"]) {
+                    auto entity = GameEngine::m_EntityManager.CreateEntity();
+                    entity->id = e["id"];
+                    entity->isAlive = e["isAlive"];
+                    entity->name = e["name"];
+
+                    for (auto& component : e["components"]) {
+                        std::string componentType = component["type"];
+
+                        std::shared_ptr<Component> newComponent = GameEngine::m_ComponentManager.CreateComponent(componentType);
+                        if (newComponent) {
+                            newComponent->LoadFromJSON(component);
+                            GameEngine::m_EntityManager.AddComponent(entity, newComponent);
+                        }
+                    }
+                    scene->m_Entities.push_back(entity);
+                }
+            }
+        }
+
+        file.close();
+        scene->m_Loaded = true;
+    }
+}
+
+void SAGE::SceneLayer::UnloadLevel(Scene* s)
+{
+    //TODO(mez) make sure all entities are marked unalive so EntityManager cleans them up.
+    s->m_Entities.clear();
+}
+
+void SAGE::SceneLayer::OnUpdate() {
+    // Think about how to handle this.
+    // Check event manager for LoadLevel Event
+    // Parse the message (level name)
+    // Load the level..
+    // if no level specified or its invalid load an empty scene.
+
+    // for now pretend we got a load level event:
+    std::string sceneName = "scene1";
+    if (m_CurrentScene && m_CurrentScene->m_Name != sceneName) {
+        if (m_Scenes.find(sceneName) != m_Scenes.end()) {
+            if (m_Scenes[sceneName]->m_Loaded)
+                SwitchScene(sceneName);
+            else {
+                LoadLevel(m_Scenes[sceneName]); //TODO(mez) this function should probably have success condition returned.
+                SwitchScene(sceneName);
+            }
+        }
+        else {
+            SwitchScene(std::string("empty"));
+        }
+    }
+}
+
+void SAGE::SceneLayer::LoadScenes(std::string& path) {
     using json = nlohmann::json;
 
     std::ifstream file(path.c_str());
     json data = json::parse(file);
 
-    for (auto& obj : data["gameobjects"]) {
-        std::shared_ptr<Entity> entity = GameEngine::m_EntityManager.CreateEntity();
-        entity->id = obj["id"];
-        entity->isAlive = obj["isAlive"];
-        entity->name = obj["name"];
-        for (auto& component : obj["components"]) {
-            std::string componentType = component["type"];
-
-            std::shared_ptr<Component> newComponent = m_ComponentFactory.CreateComponent(componentType);
-            if (newComponent) {
-                newComponent->LoadFromJSON(component);
-                GameEngine::m_EntityManager.AddComponent(entity, newComponent);
-            }
-        }
+    for (auto& scene : data["scenes"]) {
+        Scene* s = new Scene(
+            scene["name"],
+            scene["extension"],
+            scene["path"]);
+        m_Scenes[s->m_Name] = s;
     }
 
     file.close();

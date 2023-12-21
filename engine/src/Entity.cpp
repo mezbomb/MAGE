@@ -1,6 +1,4 @@
-// EntityManager.cpp
-
-#include "EntityManager.h"
+#include "Entity.h"
 
 namespace SAGE {
 
