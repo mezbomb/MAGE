@@ -3,7 +3,7 @@
 #include <vector>
 #include "Entity.h"
 
-namespace SAGE {
+namespace MAGE {
 
     class Scene {
     public:

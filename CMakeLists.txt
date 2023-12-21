@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(SAGE)
+project(MAGE)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 11)

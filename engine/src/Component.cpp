@@ -1,5 +1,5 @@
 #include "Component.h"
 
-namespace SAGE {
+namespace MAGE {
     std::unordered_map<std::string, ComponentFactory::ComponentCreator> ComponentFactory::componentCreators;
 }

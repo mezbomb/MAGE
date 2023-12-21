@@ -4,7 +4,7 @@
 #include "Component.h"
 #include <unordered_map>
 
-namespace SAGE {
+namespace MAGE {
     typedef std::unordered_map<Component::ComponentType, std::shared_ptr<Component>> ComponentMap;
 
     class Entity {

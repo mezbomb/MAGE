@@ -2,12 +2,12 @@
 #include "Events.h"
 
 int main() {
-    SAGE::SAGE_GAME_SETTINGS settings = {};
-    settings.GameName = "SAGE Editor";
+    MAGE::SAGE_GAME_SETTINGS settings = {};
+    settings.GameName = "MAGE Editor";
     settings.WindowWidth = 1920;
     settings.WindowHeight = 1080;
 
-    SAGE::GameEngine game(settings);
+    MAGE::GameEngine game(settings);
 
     while (!game.GameQuit()) {
         game.Run();

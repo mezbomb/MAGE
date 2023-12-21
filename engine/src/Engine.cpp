@@ -6,14 +6,14 @@
 #include "Events.h"
 #include "Component.h"
 
-namespace SAGE {
+namespace MAGE {
     EntityManager GameEngine::m_EntityManager;
     EventManager GameEngine::m_EventManager;
     ComponentFactory GameEngine::m_ComponentManager;
     //AssetManager GameEngine::m_AssetManager;
 }
 
-void SAGE::GameEngine::Run()
+void MAGE::GameEngine::Run()
 {
     m_EventManager.OnUpdate();
     m_EntityManager.OnUpdate();
@@ -23,23 +23,23 @@ void SAGE::GameEngine::Run()
     m_pDebugLayer->OnUpdate();
 }
 
-SAGE::GameEngine::GameEngine(const SAGE::SAGE_GAME_SETTINGS& settings)
+MAGE::GameEngine::GameEngine(const MAGE::SAGE_GAME_SETTINGS& settings)
 {
     GfxCreateWindowFlags flags = kGfxCreateWindowFlag_NoResizeWindow;
     m_Window = gfxCreateWindow(settings.WindowWidth, settings.WindowHeight, settings.GameName.c_str(), flags);
     //TODO(mez) make this a preprocessor macro
     m_Context = gfxCreateContext(m_Window, kGfxCreateContextFlag_EnableDebugLayer);
 
-    m_pGameLayer   = new SAGE::GameLayer();
-    m_pSceneLayer  = new SAGE::SceneLayer();
-    m_pRenderLayer = new SAGE::RenderLayer(m_Context);
-    m_pDebugLayer  = new SAGE::DebugLayer();
+    m_pGameLayer   = new MAGE::GameLayer();
+    m_pSceneLayer  = new MAGE::SceneLayer();
+    m_pRenderLayer = new MAGE::RenderLayer(m_Context);
+    m_pDebugLayer  = new MAGE::DebugLayer();
 
     std::string level = "scene1.json";
     m_pSceneLayer->LoadScenes(level);
 }
 
-void SAGE::RenderLayer::OnUpdate() {
+void MAGE::RenderLayer::OnUpdate() {
     auto end = std::chrono::high_resolution_clock::now();
     m_DeltaTime = end - m_Time;
     float time = m_DeltaTime.count();
@@ -75,7 +75,7 @@ void SAGE::RenderLayer::OnUpdate() {
     gfxFrame(m_Context);
 }
 
-SAGE::SceneLayer::SceneLayer()
+MAGE::SceneLayer::SceneLayer()
 {
     m_Type = LayerType::SCENE;
     m_CurrentScene = new Scene();
@@ -85,7 +85,7 @@ SAGE::SceneLayer::SceneLayer()
     ComponentFactory::RegisterComponentType("ComponentMesh", []() -> std::shared_ptr<Component> { return std::make_shared<ComponentMesh>(); });
 }
 
-void SAGE::SceneLayer::LoadLevel(Scene* scene) {
+void MAGE::SceneLayer::LoadLevel(Scene* scene) {
     if (false == scene->m_Loaded)
     {
         using json = nlohmann::json;
@@ -120,13 +120,13 @@ void SAGE::SceneLayer::LoadLevel(Scene* scene) {
     }
 }
 
-void SAGE::SceneLayer::UnloadLevel(Scene* s)
+void MAGE::SceneLayer::UnloadLevel(Scene* s)
 {
     //TODO(mez) make sure all entities are marked unalive so EntityManager cleans them up.
     s->m_Entities.clear();
 }
 
-void SAGE::SceneLayer::OnUpdate() {
+void MAGE::SceneLayer::OnUpdate() {
     // Think about how to handle this.
     // Check event manager for LoadLevel Event
     // Parse the message (level name)
@@ -150,7 +150,7 @@ void SAGE::SceneLayer::OnUpdate() {
     }
 }
 
-void SAGE::SceneLayer::LoadScenes(std::string& path) {
+void MAGE::SceneLayer::LoadScenes(std::string& path) {
     using json = nlohmann::json;
 
     std::ifstream file(path.c_str());

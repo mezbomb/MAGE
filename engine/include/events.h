@@ -3,7 +3,7 @@
 #include <vector>
 #include <memory>
 
-namespace SAGE {
+namespace MAGE {
 
     class Event {
     public:

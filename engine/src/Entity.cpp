@@ -1,6 +1,6 @@
 #include "Entity.h"
 
-namespace SAGE {
+namespace MAGE {
 
     void EntityManager::OnUpdate()
     {

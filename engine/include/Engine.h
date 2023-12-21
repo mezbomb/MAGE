@@ -11,7 +11,7 @@
 #include "Entity.h"
 #include "Scene.h"
 
-namespace SAGE {
+namespace MAGE {
 
     class Layer {
     public:
@@ -85,7 +85,7 @@ namespace SAGE {
         unsigned int WindowWidth;
         unsigned int WindowHeight;
 
-        SAGE_GAME_SETTINGS(const std::string& name = "SAGE Game", unsigned int w = 1280, unsigned int h = 720)
+        SAGE_GAME_SETTINGS(const std::string& name = "MAGE Game", unsigned int w = 1280, unsigned int h = 720)
             : GameName(name), WindowWidth(w), WindowHeight(h) {};
     };
 

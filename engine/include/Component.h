@@ -3,7 +3,7 @@
 #include "gfx.h"
 #include <unordered_map>
 
-namespace SAGE {
+namespace MAGE {
 
     using json = nlohmann::json;
 

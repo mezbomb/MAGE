@@ -1,7 +1,7 @@
 #include "Systems.h"
 #include <iostream>
 
-void SAGE::InputSystem::HandleKeyInput()
+void MAGE::InputSystem::HandleKeyInput()
 {
     std::cout << "You Lose!\n";
 }

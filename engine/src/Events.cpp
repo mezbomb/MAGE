@@ -1,6 +1,6 @@
 #include "Events.h"
 
-namespace SAGE {
+namespace MAGE {
 
     void EventManager::OnUpdate()
     {
@@ -20,7 +20,7 @@ namespace SAGE {
 
     std::shared_ptr<Event> EventManager::CreateSageEvent(Event::EventType type)
     {
-        auto Event = std::shared_ptr<SAGE::Event>(new SAGE::Event(type));
+        auto Event = std::shared_ptr<MAGE::Event>(new MAGE::Event(type));
         QueueEvent(std::make_tuple(Event, type));
         return Event;
     }
