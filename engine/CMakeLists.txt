@@ -1,16 +1,16 @@
 # Engine library
 add_library(engine STATIC
-    src/engine_source.cpp
-    src/engine_systems.cpp
-    src/ResourceManager.cpp
+    src/Engine.cpp
+    src/Systems.cpp
+    src/EntityManager.cpp
     src/Component.cpp
-    src/SceneLayer.cpp
-    include/engine_header.h
-    include/engine_systems.h
-    include/events.h
-    include/GameObject.h
+    src/Scene.cpp
+    include/Engine.h
+    include/Systems.h
+    include/Events.h
+    include/Entity.h
     include/Component.h
-    include/ResourceManager.h
+    include/EntityManager.h
     ${CMAKE_SOURCE_DIR}/thirdparty/gfx/gfx.h
     ${CMAKE_SOURCE_DIR}/thirdparty/nlohmann/json.hpp
 )
@@ -22,12 +22,7 @@ target_include_directories(engine PUBLIC
     ${CMAKE_SOURCE_DIR}/thirdparty/nlohmann/
 )
 
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES
-    src/engine_source.cpp
-    src/engine_systems.cpp
-    include/engine_header.h
-    include/engine_systems.h
-)
+# source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES )
 
 add_dependencies(engine gfx)
 

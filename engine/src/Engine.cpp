@@ -1,13 +1,18 @@
-#include "engine_header.h"
-#include "events.h"
+#include "Engine.h"
+#include "Events.h"
 #include <iostream>
 #include "json.hpp"
 #include <fstream>
-#include "ResourceManager.h"
+#include "EntityManager.h"
 #include "Component.h"
+
+namespace SAGE {
+    EntityManager GameEngine::m_EntityManager;
+}
 
 void SAGE::GameEngine::Run()
 {
+    m_EntityManager.OnUpdate();
     m_pGameLayer->OnUpdate();
     m_pSceneLayer->OnUpdate();
     m_pRenderLayer->OnUpdate();
@@ -57,37 +62,27 @@ void SAGE::RenderLayer::OnUpdate() {
     GfxBuffer vertex_buffer;
     GfxProgram program;
     GfxKernel kernel;
-
-    bool hack = true;
     
-    auto world = SAGE::SceneLayer::GetWorld();
-    for (auto& obj : world) {
-        // only handle mesh for now
-        for (auto component : obj->m_components) {
-            if (component->m_ComponentType == Component::ComponentType::MESH) {
-                auto meshComponent = std::dynamic_pointer_cast<ComponentMesh>(component);
-                if (meshComponent) {
-                    //create the resources
-                    if (hack) {
-                        vertex_buffer = gfxCreateBuffer(m_Context, sizeof(float) * meshComponent->m_verts.size(), meshComponent->m_verts.data());
-                        m_Buffers[1] = vertex_buffer;
-                        program = gfxCreateProgram(m_Context, meshComponent->m_program.c_str());
-                        m_Programs[1] = program;
-                        kernel = gfxCreateGraphicsKernel(m_Context, program);
-                        m_Kernels[1] = kernel;
-                        hack = false;
-                    }
-
-                    gfxProgramSetParameter(m_Context, m_Programs[1], "Color", color);
-                    gfxCommandBindKernel(m_Context, m_Kernels[1]);
-                    gfxCommandBindVertexBuffer(m_Context, m_Buffers[1]);
-                    gfxCommandDraw(m_Context, 3);
-                }
+    auto mesh_entities = GameEngine::m_EntityManager.GetEntitysByComponent(Component::ComponentType::MESH);
+    for (auto entity : mesh_entities) {
+        auto meshComponent = std::dynamic_pointer_cast<ComponentMesh>(entity->GetComponent(Component::ComponentType::MESH));
+        if (meshComponent) {
+            //create the resources
+            if (m_Buffers.empty()) {
+                vertex_buffer = gfxCreateBuffer(m_Context, sizeof(float) * meshComponent->m_verts.size(), meshComponent->m_verts.data());
+                m_Buffers[1] = vertex_buffer;
+                program = gfxCreateProgram(m_Context, meshComponent->m_program.c_str());
+                m_Programs[1] = program;
+                kernel = gfxCreateGraphicsKernel(m_Context, program);
+                m_Kernels[1] = kernel;
             }
+
+            gfxProgramSetParameter(m_Context, m_Programs[1], "Color", color);
+            gfxCommandBindKernel(m_Context, m_Kernels[1]);
+            gfxCommandBindVertexBuffer(m_Context, m_Buffers[1]);
+            gfxCommandDraw(m_Context, 3);
         }
     }
-
-
     gfxFrame(m_Context);
 }
 
@@ -105,18 +100,19 @@ void SAGE::SceneLayer::LoadLevel(std::string& path) {
     json data = json::parse(file);
 
     for (auto& obj : data["gameobjects"]) {
-        GameObject* go = new GameObject();
-        go->tag = obj["id"];
+        std::shared_ptr<Entity> entity = GameEngine::m_EntityManager.CreateEntity();
+        entity->id = obj["id"];
+        entity->isAlive = obj["isAlive"];
+        entity->name = obj["name"];
         for (auto& component : obj["components"]) {
             std::string componentType = component["type"];
 
             std::shared_ptr<Component> newComponent = m_ComponentFactory.CreateComponent(componentType);
             if (newComponent) {
                 newComponent->LoadFromJSON(component);
-                go->AddComponent(newComponent);
+                GameEngine::m_EntityManager.AddComponent(entity, newComponent);
             }
         }
-        m_World.push_back(go);
     }
 
     file.close();

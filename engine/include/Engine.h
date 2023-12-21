@@ -1,15 +1,15 @@
 #pragma once
-#include "engine_systems.h"
+#include "Systems.h"
 #include "gfx.h"
 #include "gfx_window.h"
 #include <vector>
 #include <string>
 #include "gfx_imgui.h"
 #include <queue>
-#include "events.h"
+#include "Events.h"
 #include <chrono>
-#include "GameObject.h"
-
+#include "Entity.h"
+#include "EntityManager.h"
 namespace SAGE {
 
     class Layer {
@@ -51,11 +51,11 @@ namespace SAGE {
         void OnUpdate() override {};
         virtual void LoadLevel(std::string&);
         virtual std::queue<Event*>& GetEventQueue() override { return m_EventQueue; }
-        static std::vector<GameObject*>& GetWorld() { return m_World; }
+        static std::vector<Entity*>& GetWorld() { return m_World; }
     private:
         std::queue<Event*> m_EventQueue;
         // SceneGraph
-        static std::vector<GameObject*> m_World;
+        static std::vector<Entity*> m_World;
         ComponentFactory m_ComponentFactory;
 
     };
@@ -124,8 +124,8 @@ namespace SAGE {
         RenderLayer* m_pRenderLayer;
         DebugLayer*  m_pDebugLayer;
 
-        // ResourceManager
-        // ResourceManager m_ResourceManager;
+        // EntityManager
+        static EntityManager m_EntityManager;
 
         // ComponentManager
     };

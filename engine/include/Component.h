@@ -17,8 +17,10 @@ namespace SAGE {
         };
 
         ComponentType m_ComponentType;
-        unsigned int id = 0;
+        unsigned int id;
         virtual void LoadFromJSON(const json& data) = 0;
+
+        Component() : m_ComponentType(ComponentType::BASE), id(0) {}
     };
 
     class ComponentFactory {
