@@ -30,10 +30,10 @@ MAGE::GameEngine::GameEngine(const MAGE::MAGE_GAME_SETTINGS& settings)
     //TODO(mez) make this a preprocessor macro
     m_Context = gfxCreateContext(m_Window, kGfxCreateContextFlag_EnableDebugLayer);
 
-    m_pGameLayer   = new MAGE::GameLayer();
-    m_pSceneLayer  = new MAGE::SceneLayer();
-    m_pRenderLayer = new MAGE::RenderLayer(m_Context);
-    m_pDebugLayer  = new MAGE::DebugLayer();
+    m_pGameLayer   = new MAGE::GameLayer(*this);
+    m_pSceneLayer  = new MAGE::SceneLayer(*this);
+    m_pRenderLayer = new MAGE::RenderLayer(*this, m_Context);
+    m_pDebugLayer  = new MAGE::DebugLayer(*this);
 
     std::string level = "scene1.json";
     m_pSceneLayer->LoadScenes(level);
@@ -75,8 +75,9 @@ void MAGE::RenderLayer::OnUpdate() {
     gfxFrame(m_Context);
 }
 
-MAGE::SceneLayer::SceneLayer()
+MAGE::SceneLayer::SceneLayer(GameEngine& g)
 {
+    m_Parent = g;
     m_Type = LayerType::SCENE;
     m_CurrentScene = new Scene();
     m_Scenes[m_CurrentScene->m_Name] = m_CurrentScene;
