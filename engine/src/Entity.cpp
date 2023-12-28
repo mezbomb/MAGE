@@ -4,15 +4,11 @@ namespace MAGE {
 
     void EntityManager::OnUpdate()
     {
-        //TODO(mez) 100% should unit test this.
-        for (auto e : m_Entities) {
-            if (false == e->isAlive) {
-                while (false == e->isAlive) {
-                    std::swap(e, m_Entities.back());
-                    m_Entities.pop_back();
-                }
-            }
-        }
+        m_Entities.erase(
+            std::remove_if(m_Entities.begin(), m_Entities.end(),
+                [](const auto& e) { return !e->isAlive; }),
+            m_Entities.end());
+
         for (auto& tup : m_EntityAddQueue) {
             m_Entities.push_back(std::get<0>(tup));
             m_EntityComponentMap[std::get<1>(tup)].push_back(std::get<0>(tup));

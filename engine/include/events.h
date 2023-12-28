@@ -16,9 +16,10 @@ namespace MAGE {
             DEBUG
         };
 
-        Event(EventType type) : m_Type(type) {}
+        Event(EventType type, int id) : m_Type(type), m_EventID(id) {}
 
         EventType m_Type;
+        int m_EventID;
         bool isHandled = false;
     private:
     };
@@ -34,7 +35,7 @@ namespace MAGE {
 
         void OnUpdate();
 
-        std::shared_ptr<Event> CreateMageEvent(Event::EventType);
+        std::shared_ptr<Event> CreateMageEvent(Event::EventType, int);
         EventContainer& GetAllEvents() { return m_Events; }
         EventContainer& GetEventsByType(Event::EventType);
         void DestroyAllEvents();

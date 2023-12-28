@@ -6,12 +6,18 @@ add_library(engine STATIC
     src/Systems.cpp
     src/Component.cpp
     src/Scene.cpp
+    src/Game.cpp
+    src/Render.cpp
+    src/Debug.cpp
     include/Engine.h
     include/Systems.h
     include/Events.h
     include/Entity.h
     include/Component.h
     include/Scene.h
+    include/Game.h
+    include/Render.h
+    include/Debug.h
     ${CMAKE_SOURCE_DIR}/thirdparty/gfx/gfx.h
     ${CMAKE_SOURCE_DIR}/thirdparty/nlohmann/json.hpp
 )
