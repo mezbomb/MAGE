@@ -1,11 +1,11 @@
 #pragma once
 #include "gfx_window.h"
-#include <map>
+#include <unordered_map>
 #include <functional>
 
 namespace MAGE {
 
-    typedef std::map<int, std::function<void()>> KeyBindMap;
+    typedef std::unordered_map<int, std::function<void()>> KeyBindMap;
 
     class System {
         virtual void Run() = 0;
@@ -13,15 +13,12 @@ namespace MAGE {
 
     class InputSystem : public System {
     public:
-        InputSystem(GfxWindow& w);
+        InputSystem();
         // Input
         virtual void Run() override;
         void Execute(int);
         KeyBindMap* GetKeyBindMap() { return &m_KeyBindings; }
     private:
-        friend class GameEngine;
-
-        GfxWindow m_Window;
         KeyBindMap m_KeyBindings;
     };
 

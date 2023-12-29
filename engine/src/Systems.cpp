@@ -5,13 +5,13 @@
 
 namespace MAGE {
 
-    InputSystem::InputSystem(GfxWindow& w) : m_Window(w) {
+    InputSystem::InputSystem() {
         // TODO(mez) import from JSON
-        m_KeyBindings[VK_UP] = []() { /* Player.Move(direction::up) */ };
-        m_KeyBindings[VK_DOWN] = []() { /* Player.Move(direction::down) */ };
-        m_KeyBindings[VK_LEFT] = []() { /* Player.Move(direction::left) */ };
-        m_KeyBindings[VK_RIGHT] = []() { /* Player.Move(direction::right) */ };
-        m_KeyBindings[VK_SPACE] = []() { /* Player.Shoot() */ };
+        m_KeyBindings[VK_UP] = []() { std::cout << "UP\n"; };
+        m_KeyBindings[VK_DOWN] = []() { std::cout << "DOWN\n"; };
+        m_KeyBindings[VK_LEFT] = []() { std::cout << "LEFT\n"; };
+        m_KeyBindings[VK_RIGHT] = []() { std::cout << "RIGHT\n"; };
+        m_KeyBindings[VK_SPACE] = []() { std::cout << "PEW PEW!\n"; };
     }
 
     void InputSystem::Execute(int key) {

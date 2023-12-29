@@ -13,7 +13,8 @@ namespace MAGE {
             GAME,
             PHYSICS,
             RENDER,
-            DEBUG
+            DEBUG,
+            EVENTCOUNT
         };
 
         Event(EventType type, int id) : m_Type(type), m_EventID(id) {}
@@ -49,5 +50,6 @@ namespace MAGE {
         EventTypeMap    m_EventTypeMap;
 
         void QueueEvent(std::tuple<std::shared_ptr<Event>, Event::EventType>);
+        void RemoveHandledEvents(EventContainer&);
     };
 }

@@ -65,5 +65,6 @@ namespace MAGE {
         EntityComponentMap m_EntityComponentMap;
 
         void QueueEntity(std::tuple<std::shared_ptr<Entity>, Component::ComponentType>);
+        void RemoveHandledEntities(EntityContainer&);
     };
 }

@@ -36,7 +36,7 @@ namespace MAGE {
             DispatchMessage(&msg);
         }
         gfxWindowPumpEvents(m_Window);
-        return gfxWindowIsCloseRequested(m_Window) || gfxWindowIsKeyPressed(m_Window, VK_ESCAPE);
+        return gfxWindowIsCloseRequested(m_Window);
     }
 
     GameEngine::GameEngine(const MAGE::MAGE_GAME_SETTINGS& settings)

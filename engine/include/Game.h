@@ -7,7 +7,7 @@ namespace MAGE {
     public:
         GameLayer(GameEngine& g) : 
             m_Parent(g),
-            m_InputSystem(g.GetWindow()) { 
+            m_InputSystem() { 
             m_Type = LayerType::GAME;
         }
         void OnUpdate() override;

@@ -3,12 +3,20 @@
 
 namespace MAGE {
 
+    void EventManager::RemoveHandledEvents(EventContainer& container) {
+        container.erase(
+            std::remove_if(container.begin(), container.end(),
+                [](const auto& e) { return e->isHandled; }),
+            container.end());
+    }
+
     void EventManager::OnUpdate()
     {
-        m_Events.erase(
-            std::remove_if(m_Events.begin(), m_Events.end(),
-                [](const auto& e) { return e->isHandled; }),
-            m_Events.end());
+
+        RemoveHandledEvents(m_Events);
+        for (int i = 0; i < Event::EventType::EVENTCOUNT; i++) {
+            RemoveHandledEvents(m_EventTypeMap[static_cast<Event::EventType>(i)]);
+        }
 
         for (auto& tup : m_EventAddQueue) {
             m_Events.push_back(std::get<0>(tup));

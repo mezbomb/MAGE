@@ -2,12 +2,20 @@
 
 namespace MAGE {
 
+    void EntityManager::RemoveHandledEntities(EntityContainer& container) {
+        container.erase(
+            std::remove_if(container.begin(), container.end(),
+                [](const auto& e) { return !e->isAlive; }),
+            container.end());
+    }
+
     void EntityManager::OnUpdate()
     {
-        m_Entities.erase(
-            std::remove_if(m_Entities.begin(), m_Entities.end(),
-                [](const auto& e) { return !e->isAlive; }),
-            m_Entities.end());
+
+        RemoveHandledEntities(m_Entities);
+        for (auto it = m_EntityComponentMap.begin(); it != m_EntityComponentMap.end(); it++) {
+            RemoveHandledEntities(it->second);
+        }
 
         for (auto& tup : m_EntityAddQueue) {
             m_Entities.push_back(std::get<0>(tup));

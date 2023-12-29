@@ -51,7 +51,7 @@ namespace MAGE {
         bool GameQuit();
 
         void* GetParent() { return nullptr; }
-        GfxWindow& GetWindow() { return m_Window; }
+        GfxWindow* GetWindow() { return &m_Window; }
 
         // Managers
         static EntityManager    m_EntityManager;
