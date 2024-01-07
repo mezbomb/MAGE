@@ -1,4 +1,9 @@
 #include "Render.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <gfx.h>
+#include <iostream>
 
 namespace MAGE {
 
@@ -11,13 +16,21 @@ namespace MAGE {
                             0.5f * sinf(time) + 0.5f,
                             1.0f };
 
+        float identity[] = { 1.0f, 0.0f, 0.0f, 0.0f,
+                             0.0f, 1.0f, 0.0f, 0.0f,
+                             0.0f, 0.0f, 1.0f, 0.0f,
+                             0.0f, 0.0f, 0.0f, 1.0f };
+
         GfxBuffer vertex_buffer;
         GfxProgram program;
         GfxKernel kernel;
 
-        auto mesh_entities = GameEngine::m_EntityManager.GetEntitysByComponent(Component::ComponentType::MESH);
+        gfxCommandClearBackBuffer(m_Context);
+
+        auto mesh_entities = GameEngine::m_EntityManager.GetEntitysByComponent(ComponentType::MESH);
         for (auto entity : mesh_entities) {
-            auto meshComponent = std::dynamic_pointer_cast<ComponentMesh>(entity->GetComponent(Component::ComponentType::MESH));
+            auto meshComponent = entity->GetComponent<ComponentMesh>(ComponentType::MESH);
+            auto transformComponent = entity->GetComponent<ComponentTransform>(ComponentType::TRANSFORM);
             if (meshComponent) {
                 //create the resources
                 if (m_Buffers.empty()) {
@@ -27,6 +40,13 @@ namespace MAGE {
                     m_Programs[1] = program;
                     kernel = gfxCreateGraphicsKernel(m_Context, program);
                     m_Kernels[1] = kernel;
+                }
+                if (transformComponent) {
+                    glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), transformComponent->position);
+                    gfxProgramSetParameter(m_Context, m_Programs[1], "translationMatrix", translationMatrix);
+                }
+                else {
+                    gfxProgramSetParameter(m_Context, m_Programs[1], "translationMatrix", identity);
                 }
 
                 gfxProgramSetParameter(m_Context, m_Programs[1], "Color", color);

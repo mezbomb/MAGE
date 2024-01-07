@@ -13,13 +13,22 @@ namespace MAGE {
 
     class InputSystem : public System {
     public:
-        InputSystem();
+        InputSystem(GfxWindow* w);
         // Input
         virtual void Run() override;
-        void Execute(int);
-        KeyBindMap* GetKeyBindMap() { return &m_KeyBindings; }
+        void EscapeKeyFn();
+        void CloseUIElement();
+        void OpenUIElement();
+        void PlayerUp();
+        void PlayerDown();
+        void PlayerLeft();
+        void PlayerRight();
+        void PlayerShoot();
     private:
-        KeyBindMap m_KeyBindings;
+        GfxWindow* m_pWindow;
+        KeyBindMap m_KeyPressMap;
+        KeyBindMap m_KeyReleaseMap;
+        std::vector<int> m_Keys;
     };
 
     class PhysicsSystem : public System {

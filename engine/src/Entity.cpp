@@ -27,7 +27,8 @@ namespace MAGE {
     std::shared_ptr<Entity> EntityManager::CreateEntity()
     {
         auto entity = std::shared_ptr<Entity>(new Entity());
-        QueueEntity(std::make_tuple(entity, Component::ComponentType::BASE));
+        entity->id = ++m_EntityCount;
+        QueueEntity(std::make_tuple(entity, ComponentType::BASE));
         return entity;
     }
 
@@ -37,9 +38,22 @@ namespace MAGE {
         QueueEntity(std::make_tuple(entity, component->m_ComponentType));
     }
 
-    EntityContainer& EntityManager::GetEntitysByComponent(Component::ComponentType type)
+    EntityContainer& EntityManager::GetEntitysByComponent(ComponentType type)
     {
         return m_EntityComponentMap[type];
+    }
+
+    EntitySPtr EntityManager::GetPlayer()
+    {
+        if (!m_PlayerEntity) {
+            for (EntitySPtr e : m_EntityComponentMap[ComponentType::BASE]) {
+                if (e->name == "Player") {
+                    m_PlayerEntity = e;
+                    break;
+                }
+            }
+        }
+        return m_PlayerEntity;
     }
 
     void EntityManager::DestroyAllEntities()
@@ -49,7 +63,7 @@ namespace MAGE {
         m_EntityComponentMap.clear();
     }
 
-    void EntityManager::QueueEntity(std::tuple<std::shared_ptr<Entity>, Component::ComponentType> tuple)
+    void EntityManager::QueueEntity(std::tuple<std::shared_ptr<Entity>, ComponentType> tuple)
     {
         m_EntityAddQueue.push_back(tuple);
     }

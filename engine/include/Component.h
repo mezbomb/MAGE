@@ -1,21 +1,22 @@
 #pragma once
 #include "json.hpp"
 #include "gfx.h"
+#include <glm/glm.hpp>
 #include <unordered_map>
 
 namespace MAGE {
 
     using json = nlohmann::json;
 
+    enum ComponentType {
+        BASE,
+        TRANSFORM,
+        MESH,
+        UNKNOWN,
+    };
+
     class Component {
     public:
-        enum ComponentType {
-            BASE,
-            TRANSFORM,
-            MESH,
-            UNKNOWN,
-        };
-
         ComponentType m_ComponentType;
         unsigned int id;
         virtual void LoadFromJSON(const json& data) = 0;
@@ -53,23 +54,33 @@ namespace MAGE {
         void LoadFromJSON(const json& data) override {
             if (data.find("position") != data.end()) {
                 const json& positionData = data["position"];
-                position = positionData.get<std::vector<float>>();
+                std::vector<float> temp = positionData.get<std::vector<float>>();
+                position.x = temp[0];
+                position.y = temp[1];
+                position.z = temp[2];
             }
 
             if (data.find("rotation") != data.end()) {
                 const json& rotationData = data["rotation"];
-                rotation = rotationData.get<std::vector<float>>();
+                std::vector<float> temp = rotationData.get<std::vector<float>>();
+                rotation.x = temp[0];
+                rotation.y = temp[1];
+                rotation.z = temp[2];
             }
 
             if (data.find("scale") != data.end()) {
                 const json& scaleData = data["scale"];
-                scale = scaleData.get<std::vector<float>>();
+                std::vector<float> temp = scaleData.get<std::vector<float>>();
+                scale.x = temp[0];
+                scale.y = temp[1];
+                scale.z = temp[2];
             }
         }
 
-        std::vector<float> position;
-        std::vector<float> rotation;
-        std::vector<float> scale;
+        glm::vec3 position = glm::vec3(0.0f);
+        glm::vec3 rotation = glm::vec3(0.0f);
+        glm::vec3 scale    = glm::vec3(0.0f);
+        glm::vec2 velocity = glm::vec2(0.0f);
     };
 
     class ComponentMesh : public Component {

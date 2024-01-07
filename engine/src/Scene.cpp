@@ -27,7 +27,6 @@ namespace MAGE {
                 if (s["name"] == scene->m_Name) {
                     for (auto& e : s["entities"]) {
                         auto entity = GameEngine::m_EntityManager.CreateEntity();
-                        entity->id = e["id"];
                         entity->isAlive = e["isAlive"];
                         entity->name = e["name"];
 

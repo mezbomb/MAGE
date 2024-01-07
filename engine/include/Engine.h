@@ -43,6 +43,12 @@ namespace MAGE {
             : GameName(name), WindowWidth(w), WindowHeight(h) {};
     };
 
+    enum class GameState {
+        Playing,
+        Paused,
+        Menu
+    };
+
     class GameEngine {
     public:
         GameEngine(const MAGE_GAME_SETTINGS& settings = MAGE_GAME_SETTINGS());
@@ -52,12 +58,14 @@ namespace MAGE {
 
         void* GetParent() { return nullptr; }
         GfxWindow* GetWindow() { return &m_Window; }
+        GfxContext* GetContext() { return &m_Context; }
 
         // Managers
         static EntityManager    m_EntityManager;
         static ComponentFactory m_ComponentManager; //TODO(mez) make factory part of manager use manager type
         static EventManager     m_EventManager;
         // static AssetManager  m_AssetManager;
+        static GameState gGameState;
 
     private:
         friend class GameLayer;
@@ -73,6 +81,7 @@ namespace MAGE {
         SceneLayer*  m_pSceneLayer;
         RenderLayer* m_pRenderLayer;
         DebugLayer*  m_pDebugLayer;
+
 
     };
 }
